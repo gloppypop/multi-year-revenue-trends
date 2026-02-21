@@ -48,13 +48,45 @@ def plot_total_revenue(
 
     # Shade post-takeover region
     x_max = df["month"].max()
-    ax.axvspan(takeover_ts, x_max, alpha=0.12)
+    ax.axvspan(takeover_ts, x_max, alpha=0.12, label="Post-takeover period")
 
     # Vertical marker
     ax.axvline(takeover_ts, linestyle="--", linewidth=1.6)
     ax.text(takeover_ts, ax.get_ylim()[1], " Took over (Aug 2023)", va="top")
 
-    # --- Post-takeover trendline only ---
+    # Split into pre/post for summary stats
+    pre = df[df["month"] < takeover_ts].copy()
+    post = df[df["month"] >= takeover_ts].copy()
+
+    # Add pre vs post averages on the chart
+    if len(pre) >= 1 and len(post) >= 1:
+        pre_avg = float(pre["revenue"].mean())
+        post_avg = float(post["revenue"].mean())
+
+        if pre_avg > 0:
+            pct = (post_avg / pre_avg - 1) * 100
+        else:
+            pct = np.nan
+
+        # Put "stats box" in the top-left
+        stats_text = (
+            f"Avg monthly revenue (pre):  ${pre_avg:,.0f}\n"
+            f"Avg monthly revenue (post): ${post_avg:,.0f}\n"
+            f"Change: {pct:+.1f}%"
+        )
+
+        ax.text(
+            0.02,
+            0.92,
+            stats_text,
+            transform=ax.transAxes,
+            ha="left",
+            va="top",
+            fontsize=9,
+            bbox=dict(boxstyle="round,pad=0.25", facecolor="white", alpha=0.80),
+        )
+
+    # Post-takeover trendline
     df["t"] = np.arange(len(df))
     post = df[df["month"] >= takeover_ts].copy()
 
