@@ -1,0 +1,16 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data (never commit real exports)
+data/*.csv
+!data/sample_*.csv
+
+# Outputs (commit charts, but not random junk)
+outputs/*.csv
+outputs/*.xlsx
+outputs/*.parquet
